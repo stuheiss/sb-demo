@@ -1,0 +1,68 @@
+# repo: sb
+# primary branch: "main" (not "master")
+# url: https://github.com/stuheiss/sb
+
+# create app "sb"
+vue create sb
+cd sb
+
+# add unit-jest
+vue add unit-jest
+
+# commit and push
+git add . && git commit -m'first commit' && git push -u origin main
+
+# enable deploy vue app to github pages
+# 1. create file "vue.config.js" with content
+# module.exports = {
+#   publicPath: '/sb/'
+# }
+# 2. create "scripts/gh-pages-deploy.js" with content
+# const execa = require("execa");
+# const fs = require("fs");
+# const args = process.argv.slice(2);
+# const deployBranchName = args.length ? args[0] : 'master';
+
+# (async () => {
+#   try {
+#     await execa("git", ["checkout", "--orphan", "gh-pages"]);
+#     console.log("Building...");
+#     await execa("npm", ["run", "build"]);
+#     // Understand if it's dist or build folder
+#     const folderName = fs.existsSync("dist") ? "dist" : "build";
+#     await execa("git", ["--work-tree", folderName, "add", "--all"]);
+#     await execa("git", ["--work-tree", folderName, "commit", "-m", "gh-pages"]);
+#     console.log("Pushing to gh-pages...");
+#     await execa("git", ["push", "origin", "HEAD:gh-pages", "--force"]);
+#     await execa("rm", ["-r", folderName]);
+#     console.log("Deploy branch " + deployBranchName);
+#     await execa("git", ["checkout", "-f", deployBranchName]);
+#     await execa("git", ["branch", "-D", "gh-pages"]);
+#     console.log("Successfully deployed");
+#   } catch (e) {
+#     console.log(e.message);
+#     process.exit(1);
+#   }
+# })();
+# 3. add to scripts in package.json
+# "gh-pages-deploy": "node scripts/gh-pages-deploy.js main"
+# deploy app:
+npm run gh-pages-deploy
+
+# git add, commit, and push
+
+# add storybook
+npx sb init
+# git add, commit, and push
+
+# optionally test that you can run storybook
+npm run storybook
+
+# install storybook-deployer
+npm i @storybook/storybook-deployer --save-dev
+# add to scripts in package.json
+# "deploy-storybook": "storybook-to-ghpages -- --source-branch=main"
+# git add, commit, and push
+
+# deploy storybook:
+npm run deploy-storybook
